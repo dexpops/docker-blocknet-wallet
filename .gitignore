@@ -1,0 +1,15 @@
+# Module directory
+.DS_Store
+
+# Ansible
+*.retry
+*.pyc
+
+# VScode
+.vscode/*
+.vscode/*
+
+# Python local env
+venv/*
+
+**/.terraform
