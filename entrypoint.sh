@@ -24,12 +24,12 @@ else
 
   if [ -z $BLOCKNETDX_SNAPSHOT ]
   then
-    BLOCKNETDX_SNAPSHOT="${BLOCKNETDX_DATA_DIR}/blocknetdx_snapshot.zip"
+    BLOCKNETDX_SNAPSHOT="/snapshots/blocknetdx_snapshot.zip"
   fi
 
   if [ -z $BLOCKNETDX_SNAPSHOT_MARKER ]
   then
-    BLOCKNETDX_SNAPSHOT_MARKER="${BLOCKNETDX_DATA_DIR}/.finished_snapshot_blocknetdx"
+    BLOCKNETDX_SNAPSHOT_MARKER="/snapshots/.finished_snapshot_blocknetdx"
   fi
 
   while [ ! -f $BLOCKNETDX_SNAPSHOT_MARKER ]
