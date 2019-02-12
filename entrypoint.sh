@@ -53,7 +53,7 @@ else
 
 fi
 
-echo "Starting with config: "
+echo "Starting with config:"
 cat $BLOCKNETDX_CONFIG_FILE
 
 exec $BLOCKNETDX_BIN_DIR/blocknetdxd -conf=$BLOCKNETDX_CONFIG_FILE -server -printtoconsole
