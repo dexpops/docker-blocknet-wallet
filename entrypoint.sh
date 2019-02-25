@@ -7,7 +7,12 @@ fi
 
 if [ -z $BLOCKNETDX_RPCPASSWORD ]
 then
-  BLOCKNETDX_RPCPASSWORD="suttMinrull1e"
+  BLOCKNETDX_RPCPASSWORD="suttMinrull1e123"
+fi
+
+if [ -z $BLOCKNETDX_SNAPSHOT_FILENAME ]
+then
+  BLOCKNETDX_SNAPSHOT_FILENAME=blocknetdex.zip
 fi
 
 sed -i "s/{{BLOCKNETDX_DATA_DIR}}/${BLOCKNETDX_DATA_DIR//\//\\/}/g" $BLOCKNETDX_CONFIG_FILE
@@ -21,24 +26,28 @@ then
 else
 
   echo "Started blocknetdx in FastSync mode"
+  echo "Finding fileserver to download from"
 
-  if [ -z $BLOCKNETDX_SNAPSHOT ]
-  then
-    BLOCKNETDX_SNAPSHOT="/snapshots/blocknetdx_snapshot.zip"
-  fi
-
-  if [ -z $BLOCKNETDX_SNAPSHOT_MARKER ]
-  then
-    BLOCKNETDX_SNAPSHOT_MARKER="/snapshots/.finished_snapshot_blocknetdx"
-  fi
-
-  while [ ! -f $BLOCKNETDX_SNAPSHOT_MARKER ]
+  while [ 1 ]
   do
-    echo "$(date): Waiting for ${BLOCKNETDX_SNAPSHOT_MARKER} to be ready..."
-    sleep 5
+
+  	FILESERVER_IP=$(dig +short @127.0.0.1 -p 8600 blocknet-snapshot.nginx.service.consul.)
+  	FILESERVER_PORT=$(dig +short @127.0.0.1 -p 8600 blocknet-snapshot.nginx.service.consul. SRV | awk '{ print $3 }')
+
+    if [ ! -z "$FILESERVER_IP" ]
+    then
+      echo "Nginx fileserver service found @$FILESERVER_IP:$FILESERVER_PORT, lets get this show on the road..."
+      exit
+    else
+      echo "$(date): Nginx fileserver service not found yet..."
+    fi
+
+    sleep 10
+
   done
 
-  echo "Found $BLOCKNETDX_SNAPSHOT_MARKER!"
+  echo "Downloading http://$FILESERVER_IP:$FILESERVER_PORT/$BLOCKNETDX_SNAPSHOT_FILENAME"
+  wget "http://$FILESERVER_IP:$FILESERVER_PORT/$BLOCKNETDX_SNAPSHOT_FILENAME"
 
   # If file does not exist, then resync with new file
   if [ ! -f "$BLOCKNETDX_DATA_DIR/.fast_synced" ]
@@ -47,7 +56,7 @@ else
     rm -rf "$BLOCKNETDX_DATA_DIR/blocks"
     rm -rf "$BLOCKNETDX_DATA_DIR/chainstate"
     echo "Extracting snapshot from zip: $BLOCKNETDX_SNAPSHOT to: $BLOCKNETDX_DATA_DIR"
-    unzip -d $BLOCKNETDX_DATA_DIR $BLOCKNETDX_SNAPSHOT
+    unzip -d $BLOCKNETDX_DATA_DIR $BLOCKNETDX_SNAPSHOT_FILENAME
     touch $BLOCKNETDX_DATA_DIR/.fast_synced
   fi
 
