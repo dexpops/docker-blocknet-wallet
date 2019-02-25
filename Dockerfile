@@ -1,6 +1,6 @@
 FROM blocknetdx/servicenode:3.12.1
 
-RUN apt-get update && apt-get install -y unzip
+RUN apt-get update && apt-get install -y unzip dnsutils
 
 ENV BLOCKNETDX_BASE_DIR /app
 ENV BLOCKNETDX_BIN_DIR $BLOCKNETDX_BASE_DIR/bin
