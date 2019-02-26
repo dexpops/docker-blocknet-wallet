@@ -52,11 +52,11 @@ else
   # If file does not exist, then resync with new file
   if [ ! -f "$BLOCKNETDX_DATA_DIR/.fast_synced" ]
   then
-    echo "deleting $BLOCKNETDX_DATA_DIR/blocks and $BLOCKNETDX_DATA_DIR/chainstate"
-    rm -rf "$BLOCKNETDX_DATA_DIR/blocks"
-    rm -rf "$BLOCKNETDX_DATA_DIR/chainstate"
+    echo "Deleting $BLOCKNETDX_DATA_DIR/"
+    rm -rf "$BLOCKNETDX_DATA_DIR/"
     echo "Extracting snapshot from zip: $BLOCKNETDX_SNAPSHOT to: $BLOCKNETDX_DATA_DIR"
-    unzip -d $BLOCKNETDX_DATA_DIR -j $BLOCKNETDX_SNAPSHOT_FILENAME
+    unzip $BLOCKNETDX_SNAPSHOT_FILENAME
+    mv BlocknetDX/ $BLOCKNETDX_DATA_DIR/
     touch $BLOCKNETDX_DATA_DIR/.fast_synced
   fi
 
