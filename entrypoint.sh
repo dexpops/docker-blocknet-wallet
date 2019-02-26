@@ -12,7 +12,7 @@ fi
 
 if [ -z $BLOCKNETDX_SNAPSHOT_FILENAME ]
 then
-  BLOCKNETDX_SNAPSHOT_FILENAME=blocknetdex.zip
+  BLOCKNETDX_SNAPSHOT_FILENAME=blocknetdx.zip
 fi
 
 sed -i "s/{{BLOCKNETDX_DATA_DIR}}/${BLOCKNETDX_DATA_DIR//\//\\/}/g" $BLOCKNETDX_CONFIG_FILE
@@ -31,13 +31,13 @@ else
   while [ 1 ]
   do
 
-  	FILESERVER_IP=$(dig +short @127.0.0.1 -p 8600 blocknet-snapshot.nginx.service.consul.)
-  	FILESERVER_PORT=$(dig +short @127.0.0.1 -p 8600 blocknet-snapshot.nginx.service.consul. SRV | awk '{ print $3 }')
+  	FILESERVER_IP=$(dig +short blocknet-snapshot.nginx.service.consul.)
+  	FILESERVER_PORT=$(dig +short blocknet-snapshot.nginx.service.consul. SRV | awk '{ print $3 }')
 
     if [ ! -z "$FILESERVER_IP" ]
     then
       echo "Nginx fileserver service found @$FILESERVER_IP:$FILESERVER_PORT, lets get this show on the road..."
-      exit
+      break
     else
       echo "$(date): Nginx fileserver service not found yet..."
     fi
@@ -47,7 +47,7 @@ else
   done
 
   echo "Downloading http://$FILESERVER_IP:$FILESERVER_PORT/$BLOCKNETDX_SNAPSHOT_FILENAME"
-  wget "http://$FILESERVER_IP:$FILESERVER_PORT/$BLOCKNETDX_SNAPSHOT_FILENAME"
+  wget http://$FILESERVER_IP:$FILESERVER_PORT/$BLOCKNETDX_SNAPSHOT_FILENAME
 
   # If file does not exist, then resync with new file
   if [ ! -f "$BLOCKNETDX_DATA_DIR/.fast_synced" ]
