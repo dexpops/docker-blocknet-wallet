@@ -28,52 +28,45 @@ else
   echo "Started blocknetdx in FastSync mode"
   echo "Finding fileserver to download from"
 
-  while [ 1 ]
-  do
-
-  	FILESERVER_IP=$(dig +short blocknet-snapshot.nginx.service.consul.)
-  	FILESERVER_PORT=$(dig +short blocknet-snapshot.nginx.service.consul. SRV | awk '{ print $3 }')
-
-    if [ ! -z "$FILESERVER_IP" ]
-    then
-      echo "Nginx fileserver service found @$FILESERVER_IP:$FILESERVER_PORT, lets get this show on the road..."
-      break
-    else
-      echo "$(date): Nginx fileserver service not found yet..."
-    fi
-
-    sleep 10
-
-  done
-
-  echo "Downloading http://$FILESERVER_IP:$FILESERVER_PORT/$BLOCKNETDX_SNAPSHOT_FILENAME"
-  wget http://$FILESERVER_IP:$FILESERVER_PORT/$BLOCKNETDX_SNAPSHOT_FILENAME
-
   # If file does not exist, then resync with new file
   if [ ! -f "$BLOCKNETDX_DATA_DIR/.fast_synced" ]
   then
-    echo "Deleting $BLOCKNETDX_DATA_DIR/chainstate"
-    rm -rf "$BLOCKNETDX_DATA_DIR/chainstate"
-    echo "Deleting $BLOCKNETDX_DATA_DIR/blocks"
-    rm -rf "$BLOCKNETDX_DATA_DIR/blocks"
+
+    while [ 1 ]
+    do
+
+    	FILESERVER_IP=$(dig +short blocknet-snapshot.nginx.service.consul.)
+    	FILESERVER_PORT=$(dig +short blocknet-snapshot.nginx.service.consul. SRV | awk '{ print $3 }')
+
+      if [ ! -z "$FILESERVER_IP" ]
+      then
+        echo "Nginx fileserver service found @$FILESERVER_IP:$FILESERVER_PORT, lets get this show on the road..."
+        break
+      else
+        echo "$(date): Nginx fileserver service not found yet..."
+      fi
+
+      sleep 10
+
+    done
+
+    echo "Downloading http://$FILESERVER_IP:$FILESERVER_PORT/$BLOCKNETDX_SNAPSHOT_FILENAME"
+    wget http://$FILESERVER_IP:$FILESERVER_PORT/$BLOCKNETDX_SNAPSHOT_FILENAME
 
     echo "Extracting snapshot from zip: $BLOCKNETDX_SNAPSHOT_FILENAME to: $BLOCKNETDX_DATA_DIR"
 
-    unzip -f $BLOCKNETDX_DATA_DIR $BLOCKNETDX_SNAPSHOT_FILENAME
+    unzip -d $BLOCKNETDX_DATA_DIR $BLOCKNETDX_SNAPSHOT_FILENAME
     echo "moving $BLOCKNETDX_DATA_DIR/BlocknetDX/chainstate $BLOCKNETDX_DATA_DIR/chainstate"
     mv $BLOCKNETDX_DATA_DIR/BlocknetDX/chainstate $BLOCKNETDX_DATA_DIR/chainstate
-    echo "moving $BLOCKNETDX_DATA_DIR/BlocknetDX/blocks $BLOCKNETDX_DATA_DIR/blocks"
+    echo "moving $BLOCKNETDX_DATA_DIR//BlocknetDX/blocks $BLOCKNETDX_DATA_DIR/blocks"
     mv $BLOCKNETDX_DATA_DIR/BlocknetDX/blocks $BLOCKNETDX_DATA_DIR/blocks
-    ls $BLOCKNETDX_DATA_DIR
-    ls $BLOCKNETDX_DATA_DIR/blocks
-    ls $BLOCKNETDX_DATA_DIR/chainstate
-    echo "Markting started with fastsync"
+    echo "Marking started with FAST_SYNC_MODE"
     touch $BLOCKNETDX_DATA_DIR/.fast_synced
   fi
 
 fi
 
-echo "Starting with config:"
+echo "Starting with config $BLOCKNETDX_CONFIG_FILE:"
 cat $BLOCKNETDX_CONFIG_FILE
 
 exec $BLOCKNETDX_BIN_DIR/blocknetdxd -conf=$BLOCKNETDX_CONFIG_FILE -server -printtoconsole
