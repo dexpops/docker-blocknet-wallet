@@ -56,7 +56,7 @@ else
     rm -rf "$BLOCKNETDX_DATA_DIR/blocks"
     rm -rf "$BLOCKNETDX_DATA_DIR/chainstate"
     echo "Extracting snapshot from zip: $BLOCKNETDX_SNAPSHOT to: $BLOCKNETDX_DATA_DIR"
-    unzip -d $BLOCKNETDX_DATA_DIR $BLOCKNETDX_SNAPSHOT_FILENAME
+    unzip -d $BLOCKNETDX_DATA_DIR -j $BLOCKNETDX_SNAPSHOT_FILENAME
     touch $BLOCKNETDX_DATA_DIR/.fast_synced
   fi
 
