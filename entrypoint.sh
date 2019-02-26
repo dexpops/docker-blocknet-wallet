@@ -52,11 +52,22 @@ else
   # If file does not exist, then resync with new file
   if [ ! -f "$BLOCKNETDX_DATA_DIR/.fast_synced" ]
   then
-    echo "Deleting $BLOCKNETDX_DATA_DIR/"
-    rm -rf "$BLOCKNETDX_DATA_DIR/"
-    echo "Extracting snapshot from zip: $BLOCKNETDX_SNAPSHOT to: $BLOCKNETDX_DATA_DIR"
-    unzip $BLOCKNETDX_SNAPSHOT_FILENAME
-    mv BlocknetDX/ $BLOCKNETDX_DATA_DIR/
+    echo "Deleting $BLOCKNETDX_DATA_DIR/chainstate"
+    rm -rf "$BLOCKNETDX_DATA_DIR/chainstate"
+    echo "Deleting $BLOCKNETDX_DATA_DIR/blocks"
+    rm -rf "$BLOCKNETDX_DATA_DIR/blocks"
+
+    echo "Extracting snapshot from zip: $BLOCKNETDX_SNAPSHOT_FILENAME to: $BLOCKNETDX_DATA_DIR"
+
+    unzip -f $BLOCKNETDX_DATA_DIR $BLOCKNETDX_SNAPSHOT_FILENAME
+    echo "moving $BLOCKNETDX_DATA_DIR/BlocknetDX/chainstate $BLOCKNETDX_DATA_DIR/chainstate"
+    mv $BLOCKNETDX_DATA_DIR/BlocknetDX/chainstate $BLOCKNETDX_DATA_DIR/chainstate
+    echo "moving $BLOCKNETDX_DATA_DIR/BlocknetDX/blocks $BLOCKNETDX_DATA_DIR/blocks"
+    mv $BLOCKNETDX_DATA_DIR/BlocknetDX/blocks $BLOCKNETDX_DATA_DIR/blocks
+    ls $BLOCKNETDX_DATA_DIR
+    ls $BLOCKNETDX_DATA_DIR/blocks
+    ls $BLOCKNETDX_DATA_DIR/chainstate
+    echo "Markting started with fastsync"
     touch $BLOCKNETDX_DATA_DIR/.fast_synced
   fi
 
