@@ -1,1 +1,1 @@
-# Blocknet DX Docker image
+# Blocknet Wallet
