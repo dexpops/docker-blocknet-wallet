@@ -1,12 +1,13 @@
 FROM blocknetdx/servicenode:3.12.1
 
-RUN apt-get update && apt-get install -y unzip dnsutils
+RUN apt-get update && apt-get install -y unzip dnsutils tcpdump
 
 ENV BLOCKNETDX_BASE_DIR /app
-ENV BLOCKNETDX_BIN_DIR $BLOCKNETDX_BASE_DIR/bin
-ENV BLOCKNETDX_DATA_DIR $BLOCKNETDX_BASE_DIR/data
-ENV BLOCKNETDX_CONFIG_DIR $BLOCKNETDX_BASE_DIR/config
+ENV BLOCKNETDX_BIN_DIR $BLOCKNETDX_BASE_DIR
+ENV BLOCKNETDX_DATA_DIR $BLOCKNETDX_BASE_DIR
+ENV BLOCKNETDX_CONFIG_DIR $BLOCKNETDX_BASE_DIR
 ENV BLOCKNETDX_CONFIG_FILE $BLOCKNETDX_CONFIG_DIR/blocknetdx.conf
+ENV BLOCKNETDX_XBRIDGE $BLOCKNETDX_CONFIG_DIR/xbridge.conf
 
 COPY entrypoint.sh /entrypoint.sh
 
@@ -17,5 +18,6 @@ RUN chmod +x /entrypoint.sh && \
     mv /bin/blocknetdxd $BLOCKNETDX_BIN_DIR/blocknetdxd
 
 COPY files/blocknetdx.conf $BLOCKNETDX_CONFIG_FILE
+COPY files/xbridge.conf $BLOCKNETDX_XBRIDGE
 
 ENTRYPOINT [ "/entrypoint.sh" ]
