@@ -7,7 +7,6 @@ if [[ "$1" == "blocknetdx-cli" || "$1" == "blocknetdx-tx" || "$1" == "blocknetdx
 
 	mkdir -p "$BLOCKNETDX_DATA"
 
-
 	# Fast sync mode
 	if [[ ! -v BLOCKNETDX_SNAPSHOT ]]
 	then
@@ -25,11 +24,20 @@ if [[ "$1" == "blocknetdx-cli" || "$1" == "blocknetdx-tx" || "$1" == "blocknetdx
 	  fi
 	fi
 
+
 	cat <<-EOF > "$BLOCKNETDX_DATA/blocknetdx.conf"
 datadir=/home/blocknet/.blocknetdx
 dbcache=256
 maxmempool=512
 maxmempoolxbridge=128
+${BLOCKNETDX_EXTRA_ARGS}
+EOF
+
+	# Set some defaults
+	if [[ ! -v BLOCKNETDX_EXTRA_ARGS ]]
+	then
+		echo "Setting defaults"
+		cat << EOF >> "$BLOCKNETDX_DATA/blocknetdx.conf"
 port=41412
 rpcport=41414
 listen=1
@@ -42,8 +50,9 @@ rpcclienttimeout=15
 printtoconsole=1
 rpcuser=blocknetdxrpc
 rpcpassword=DsSjSaRQdPHNJkedZf2K2dcNTEVg3ztCuK2m7vjAisCK
-${BLOCKNETDX_EXTRA_ARGS}
 EOF
+	fi
+
 	chown blocknet:blocknet "$BLOCKNETDX_DATA/blocknetdx.conf"
 
 	# ensure correct ownership and linking of data directory
@@ -53,7 +62,10 @@ EOF
 	ln -sfn "$BLOCKNETDX_DATA" /home/blocknet/.blocknetdx
 	chown -h blocknet:blocknet /home/blocknet/.blocknetdx
 
+	echo "Starting with: "
+	cat $BLOCKNETDX_DATA/blocknetdx.conf
 	exec gosu blocknet "$@"
+	#exec sleep 84000
 
 else
 	exec "$@"
